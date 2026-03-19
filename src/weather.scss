@@ -1,0 +1,76 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.weather {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4em;
+}
+
+.weather.has-features-1 {
+  font-size: 3.7em;
+}
+
+.weather.has-features-2 {
+  font-size: 2.8em;
+}
+
+.weather.has-features-3 {
+  font-size: 2.5em;
+}
+
+.icon-wrap {
+  width: 40%;
+  min-width: 40%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.details {
+  width: 50%;
+  max-width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.temperature,
+.city,
+.precipitation,
+.wind {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.city {
+  color: var(--color-primary);
+}
+
+sup,
+sub {
+  font-size: 0.6em;
+  opacity: 0.6;
+}
+
+sub {
+  padding-left: 0.2em;
+}
+
+.text-shadows .weather img {
+  filter: drop-shadow(1px 1px 0.25em rgba(0, 0, 0, 0.5));
+}

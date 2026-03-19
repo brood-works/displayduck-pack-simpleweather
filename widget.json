@@ -1,0 +1,62 @@
+{
+    "icon": "fas fa-cloud-sun",
+    "name": "Simple Weather",
+    "description": "A simple weather widget that displays current conditions.",
+    "assets": [
+        "./img"
+    ],
+    "version": "1.0.0",
+    "widgets": [
+        {
+            "category": "weather",
+            "icon": "fas fa-cloud-sun",
+            "name": "Simple Weather",
+            "description": "A simple weather widget that displays current conditions.",
+            "id": "weather",
+            "platform": "all",
+            "minWidth": 200,
+            "minHeight": 100,
+            "config": {
+                "latitude": {
+                    "label": "Latitude",
+                    "type": "number",
+                    "defaultValue": 0
+                },
+                "longitude": {
+                    "label": "Longitude",
+                    "type": "number",
+                    "defaultValue": 0
+                },
+                "units": {
+                    "label": "Units",
+                    "type": "select",
+                    "options": [
+                        "imperial",
+                        "metric"
+                    ],
+                    "defaultValue": "metric"
+                },
+                "interval": {
+                    "label": "Update Interval (minutes)",
+                    "type": "number",
+                    "defaultValue": 10
+                },
+                "showWindSpeed": {
+                    "label": "Show Wind Speed",
+                    "type": "boolean",
+                    "defaultValue": false
+                },
+                "showPrecipitation": {
+                    "label": "Show Precipitation",
+                    "type": "boolean",
+                    "defaultValue": false
+                },
+                "showCity": {
+                    "label": "Show City Name",
+                    "type": "boolean",
+                    "defaultValue": false
+                }
+            }
+        }
+    ]
+}
