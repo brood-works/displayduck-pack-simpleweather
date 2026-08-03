@@ -1,5 +1,5 @@
 {
-    "icon": "fas fa-cloud-sun",
+    "icon": "img/icon.png",
     "name": "Simple Weather",
     "description": "A simple weather widget that displays current conditions.",
     "assets": [
@@ -9,7 +9,7 @@
     "widgets": [
         {
             "category": "weather",
-            "icon": "fas fa-cloud-sun",
+            "icon": "img/icon.png",
             "name": "Simple Weather",
             "description": "A simple weather widget that displays current conditions.",
             "id": "weather",

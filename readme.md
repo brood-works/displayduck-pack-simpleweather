@@ -13,7 +13,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/brood-works/displayduck-pack-simpleweather">
-    <img src="logo.png" alt="Logo" width="80" height="80">
+    <img src="img/logo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">DisplayDuck Simple Weather Widget</h3>
