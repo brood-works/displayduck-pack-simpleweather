@@ -5,7 +5,7 @@
     "assets": [
         "./img"
     ],
-    "version": "1.0.0",
+    "version": "1.1.0",
     "widgets": [
         {
             "category": "weather",
@@ -16,6 +16,7 @@
             "platform": "all",
             "minWidth": 200,
             "minHeight": 100,
+            "permissions": ["network"],
             "config": {
                 "latitude": {
                     "label": "Latitude",

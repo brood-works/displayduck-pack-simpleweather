@@ -1,4 +1,4 @@
-import { httpFetch, signal, type Signal, type WidgetContext, type WidgetPayload } from '@displayduck/base';
+import { signal, Widget, type Signal, type WidgetConfigValues } from '@displayduck/base';
 
 type Weather = {
   temperature: number;
@@ -9,29 +9,30 @@ type Weather = {
   precipitationProbability: number | null;
 };
 
-export class DisplayDuckWidget {
+type WeatherConfig = WidgetConfigValues & {
+  latitude?: number;
+  longitude?: number;
+  interval?: number;
+  units?: string;
+  showWindSpeed?: boolean;
+  showPrecipitation?: boolean;
+  showCity?: boolean;
+};
+
+export class DisplayDuckWidget extends Widget<WeatherConfig> {
   private refreshTimer: ReturnType<typeof setTimeout> | null = null;
-  private config: Signal<Record<string, unknown>>;
   private lastConfigFingerprint = '';
 
-  public activatedOptions: Signal<number>;
-  public cityName: Signal<string | null>;
-  public currentWeather: Signal<Weather | null>;
-
-  public constructor(private readonly ctx: WidgetContext) {
-    this.config = signal(this.extractConfig(ctx.payload));
-    this.activatedOptions = signal(0);
-    this.cityName = signal<string | null>(null);
-    this.currentWeather = signal<Weather | null>(null);
-  }
+  public readonly activatedOptions: Signal<number> = signal(0);
+  public readonly cityName: Signal<string | null> = signal<string | null>(null);
+  public readonly currentWeather: Signal<Weather | null> = signal<Weather | null>(null);
 
   public onInit(): void {
     this.lastConfigFingerprint = this.configFingerprint();
     void this.refreshWeather();
   }
 
-  public onUpdate(payload: WidgetPayload): void {
-    this.config.set(this.extractConfig(payload));
+  public onUpdate(): void {
     const nextFingerprint = this.configFingerprint();
     if (nextFingerprint === this.lastConfigFingerprint) {
       return;
@@ -69,15 +70,15 @@ export class DisplayDuckWidget {
   }
 
   public showWindSpeed(): boolean {
-    return Boolean(this.config().showWindSpeed);
+    return Boolean(this.config.showWindSpeed);
   }
 
   public showPrecipitation(): boolean {
-    return Boolean(this.config().showPrecipitation);
+    return Boolean(this.config.showPrecipitation);
   }
 
   public showCity(): boolean {
-    return Boolean(this.config().showCity);
+    return Boolean(this.config.showCity);
   }
 
   public temperatureText(): string {
@@ -100,28 +101,20 @@ export class DisplayDuckWidget {
     return value === undefined || value === null ? '0' : String(value);
   }
 
-  private extractConfig(payload: WidgetPayload): Record<string, unknown> {
-    const raw = (payload as { config?: unknown })?.config;
-    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-      return {};
-    }
-    return raw as Record<string, unknown>;
-  }
-
   private latitude(): number {
-    return Number(this.config().latitude ?? 0);
+    return Number(this.config.latitude ?? 0);
   }
 
   private longitude(): number {
-    return Number(this.config().longitude ?? 0);
+    return Number(this.config.longitude ?? 0);
   }
 
   private intervalMinutes(): number {
-    return Math.max(1, Number(this.config().interval ?? 10) || 10);
+    return Math.max(1, Number(this.config.interval ?? 10) || 10);
   }
 
   private units(): 'metric' | 'imperial' {
-    return String(this.config().units ?? 'metric') === 'imperial' ? 'imperial' : 'metric';
+    return String(this.config.units ?? 'metric') === 'imperial' ? 'imperial' : 'metric';
   }
 
   private configFingerprint(): string {
@@ -142,7 +135,12 @@ export class DisplayDuckWidget {
       this.refreshTimer = null;
     }
 
-    this.ctx.setLoading(true);
+    if (!this.permissions.has('network')) {
+      this.app.setLoading(false);
+      return;
+    }
+
+    this.app.setLoading(true);
     this.recomputeActivatedOptions();
 
     try {
@@ -160,7 +158,7 @@ export class DisplayDuckWidget {
       });
 
       const data = JSON.parse(
-        await httpFetch(`https://api.open-meteo.com/v1/forecast?${params.toString()}`),
+        await this.network.fetch(`https://api.open-meteo.com/v1/forecast?${params.toString()}`),
       ) as {
         current: {
           temperature_2m: number;
@@ -187,10 +185,10 @@ export class DisplayDuckWidget {
         this.cityName.set(null);
       }
 
-    } catch (error) { 
+    } catch (error) {
       console.error('[SimpleWeather] Failed to refresh weather', error);
     } finally {
-      this.ctx.setLoading(false);
+      this.app.setLoading(false);
       this.refreshTimer = setTimeout(() => {
         void this.refreshWeather();
       }, this.intervalMinutes() * 60 * 1000);
@@ -205,7 +203,7 @@ export class DisplayDuckWidget {
         format: 'json',
       });
       const data = JSON.parse(
-        await httpFetch(`https://nominatim.openstreetmap.org/reverse?${params.toString()}`),
+        await this.network.fetch(`https://nominatim.openstreetmap.org/reverse?${params.toString()}`),
       ) as {
         address?: Record<string, string | undefined>;
       };
